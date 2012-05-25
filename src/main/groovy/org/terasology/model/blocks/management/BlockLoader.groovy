@@ -6,7 +6,8 @@ import org.terasology.model.blocks.Block
 /**
  * @author Immortius <immortius@gmail.com>
  */
-public interface BlockLoader {
+public interface BlockLoader
+{
     Block loadBlock(ConfigObject blockConfig);
     Block loadBlock(ConfigObject blockConfig, Rotation rotation);
 }
