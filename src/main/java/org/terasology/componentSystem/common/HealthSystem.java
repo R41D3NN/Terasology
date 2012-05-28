@@ -15,7 +15,9 @@ import org.terasology.game.CoreRegistry;
 /**
  * @author Immortius <immortius@gmail.com>
  */
-public class HealthSystem implements EventHandlerSystem, UpdateSubscriberSystem {
+public class HealthSystem
+        implements EventHandlerSystem, UpdateSubscriberSystem
+{
 
     private EntityManager entityManager;
 
