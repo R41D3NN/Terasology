@@ -15,14 +15,13 @@
  */
 package org.terasology.model.structures;
 
-import java.nio.FloatBuffer;
-
-import javax.vecmath.Vector3d;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.terasology.game.CoreRegistry;
 import org.terasology.rendering.world.WorldRenderer;
+
+import javax.vecmath.Vector3d;
+import java.nio.FloatBuffer;
 
 /**
  * View frustum usable for frustum culling.
@@ -51,68 +50,25 @@ public class ViewFrustum {
     public void updateFrustum() {
         GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, _proj);
         GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, _model);
-
-        _clip.put(0, _model.get(0) * _proj.get(0) + _model.get(1) * _proj.get(4) + _model.get(2) * _proj.get(8) + _model.get(3) * _proj.get(12));
-        _clip.put(1, _model.get(0) * _proj.get(1) + _model.get(1) * _proj.get(5) + _model.get(2) * _proj.get(9) + _model.get(3) * _proj.get(13));
-        _clip.put(2, _model.get(0) * _proj.get(2) + _model.get(1) * _proj.get(6) + _model.get(2) * _proj.get(10) + _model.get(3) * _proj.get(14));
-        _clip.put(3, _model.get(0) * _proj.get(3) + _model.get(1) * _proj.get(7) + _model.get(2) * _proj.get(11) + _model.get(3) * _proj.get(15));
-
-        _clip.put(4, _model.get(4) * _proj.get(0) + _model.get(5) * _proj.get(4) + _model.get(6) * _proj.get(8) + _model.get(7) * _proj.get(12));
-        _clip.put(5, _model.get(4) * _proj.get(1) + _model.get(5) * _proj.get(5) + _model.get(6) * _proj.get(9) + _model.get(7) * _proj.get(13));
-        _clip.put(6, _model.get(4) * _proj.get(2) + _model.get(5) * _proj.get(6) + _model.get(6) * _proj.get(10) + _model.get(7) * _proj.get(14));
-        _clip.put(7, _model.get(4) * _proj.get(3) + _model.get(5) * _proj.get(7) + _model.get(6) * _proj.get(11) + _model.get(7) * _proj.get(15));
-
-        _clip.put(8, _model.get(8) * _proj.get(0) + _model.get(9) * _proj.get(4) + _model.get(10) * _proj.get(8) + _model.get(11) * _proj.get(12));
-        _clip.put(9, _model.get(8) * _proj.get(1) + _model.get(9) * _proj.get(5) + _model.get(10) * _proj.get(9) + _model.get(11) * _proj.get(13));
-        _clip.put(10, _model.get(8) * _proj.get(2) + _model.get(9) * _proj.get(6) + _model.get(10) * _proj.get(10) + _model.get(11) * _proj.get(14));
-        _clip.put(11, _model.get(8) * _proj.get(3) + _model.get(9) * _proj.get(7) + _model.get(10) * _proj.get(11) + _model.get(11) * _proj.get(15));
-
-        _clip.put(12, _model.get(12) * _proj.get(0) + _model.get(13) * _proj.get(4) + _model.get(14) * _proj.get(8) + _model.get(15) * _proj.get(12));
-        _clip.put(13, _model.get(12) * _proj.get(1) + _model.get(13) * _proj.get(5) + _model.get(14) * _proj.get(9) + _model.get(15) * _proj.get(13));
-        _clip.put(14, _model.get(12) * _proj.get(2) + _model.get(13) * _proj.get(6) + _model.get(14) * _proj.get(10) + _model.get(15) * _proj.get(14));
-        _clip.put(15, _model.get(12) * _proj.get(3) + _model.get(13) * _proj.get(7) + _model.get(14) * _proj.get(11) + _model.get(15) * _proj.get(15));
-
-        // RIGHT
-        _planes[0].setA(_clip.get(3) - _clip.get(0));
-        _planes[0].setB(_clip.get(7) - _clip.get(4));
-        _planes[0].setC(_clip.get(11) - _clip.get(8));
-        _planes[0].setD(_clip.get(15) - _clip.get(12));
-        _planes[0].normalize();
-
-        // LEFT
-        _planes[1].setA(_clip.get(3) + _clip.get(0));
-        _planes[1].setB(_clip.get(7) + _clip.get(4));
-        _planes[1].setC(_clip.get(11) + _clip.get(8));
-        _planes[1].setD(_clip.get(15) + _clip.get(12));
-        _planes[1].normalize();
-
-        // BOTTOM
-        _planes[2].setA(_clip.get(3) + _clip.get(1));
-        _planes[2].setB(_clip.get(7) + _clip.get(5));
-        _planes[2].setC(_clip.get(11) + _clip.get(9));
-        _planes[2].setD(_clip.get(15) + _clip.get(13));
-        _planes[2].normalize();
-
-        // TOP
-        _planes[3].setA(_clip.get(3) - _clip.get(1));
-        _planes[3].setB(_clip.get(7) - _clip.get(5));
-        _planes[3].setC(_clip.get(11) - _clip.get(9));
-        _planes[3].setD(_clip.get(15) - _clip.get(13));
-        _planes[3].normalize();
-
-        // FAR
-        _planes[4].setA(_clip.get(3) - _clip.get(2));
-        _planes[4].setB(_clip.get(7) - _clip.get(6));
-        _planes[4].setC(_clip.get(11) - _clip.get(10));
-        _planes[4].setD(_clip.get(15) - _clip.get(14));
-        _planes[4].normalize();
-
-        // NEAR
-        _planes[5].setA(_clip.get(3) + _clip.get(2));
-        _planes[5].setB(_clip.get(7) + _clip.get(6));
-        _planes[5].setC(_clip.get(11) + _clip.get(10));
-        _planes[5].setD(_clip.get(15) + _clip.get(14));
-        _planes[5].normalize();
+        for (int ci = 0; ci < _clip.array().length; ci++)
+        {
+            // Do we use a quick math method for this?
+            int mi = (int)Math.floor(ci / 4);
+            int mci = ci % 4;
+            _clip.put(ci, _model.get(mi * 4) * _proj.get(mci) +
+                    _model.get(mi * 4 + 1) * _proj.get(mci + 4) +
+                    _model.get(mi * 4 + 2) * _proj.get(mci + 8) +
+                    _model.get(mi * 4 + 3) * _proj.get(mci + 12));
+        }
+        for (int plane = 0; plane < _planes.length; plane++)
+        {
+            int mp = (int)Math.floor(plane / 2);
+            _planes[plane].setA(_clip.get(3) - _clip.get(mp));
+            _planes[plane].setB(_clip.get(7) - _clip.get(mp + 4));
+            _planes[plane].setC(_clip.get(11) - _clip.get(mp + 8));
+            _planes[plane].setD(_clip.get(15) - _clip.get(mp + 12));
+            _planes[plane].normalize();
+        }
     }
 
     /**
