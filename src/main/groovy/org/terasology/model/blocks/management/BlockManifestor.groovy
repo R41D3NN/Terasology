@@ -49,62 +49,106 @@ import java.nio.ByteBuffer
  * @author Rasmus 'Cervator' Praestholm <cervator@gmail.com>
  */
 @Log
-class BlockManifestor {
-
+class BlockManifestor
+{
     private static BlockManager _bm;
     protected ClasspathResourceLoader _resourceLoader;
 
-    // TODO: Usage of this is fairly brute force, maybe there's a more efficient way, with sorting or so?
+    /*
+     * TODO: Usage of this is fairly brute force, maybe there's a more efficient
+     *       way, with sorting or so?
+     */
 
     /** Not persisted */
     Map<String, BufferedImage> _images = [:]
 
-    /** Holds image index values during the loading process. These values are persisted in the Manifest */
+    /**
+     * Holds image index values during the loading process. These values are
+     * persisted in the Manifest
+     */
     protected static Map<String, Integer> _imageIndex = [:]
 
-    /** Holds Block ID index values during the loading process - also persisted in the Manifest */
+    /**
+     * Holds Block ID index values during the loading process - also persisted
+     * in the Manifest
+     */
     protected static Map<Byte, Block> _blockIndex = [:]
 
-    /** Smaller version of _blockIndex only used for loading IDs */
+    /**
+     * Smaller version of _blockIndex only used for loading IDs
+     */
     protected static Map<String, Byte> _blockStringIndex = [:]
 
     protected static List<BlockFamily> _blockFamilies = []
 
-    /** Holds the Byte value for the next Block ID - starts at 1 since Air is always 0 */
+    /**
+     * Holds the Byte value for the next Block ID - starts at 1 since Air is
+     * always 0
+     */
     protected static byte _nextByte = (byte) 1
 
-    /** Temp Manifest references - need to tie these to each saved world instead (or fail to find any, then create) */
-    File _blockManifest = new File(PathManager.getInstance().getWorldPath(), 'BlockManifest.groovy')
-    File _imageManifest = new File(PathManager.getInstance().getWorldPath(), 'ImageManifest.png')
-    File _imageManifestMipMap1 = new File(PathManager.getInstance().getWorldPath(), 'ImageManifest1.png')
-    File _imageManifestMipMap2 = new File(PathManager.getInstance().getWorldPath(), 'ImageManifest2.png')
-    File _imageManifestMipMap3 = new File(PathManager.getInstance().getWorldPath(), 'ImageManifest3.png')
+    /**
+     * Temp Manifest references - need to tie these to each saved world instead
+     * (or fail to find any, then create)
+     */
+    File _blockManifest = new File(PathManager.getInstance().getWorldPath(),
+                                   'BlockManifest.groovy')
 
-    // Empty default constructor for child classes
-    public BlockManifestor() {}
+    File _imageManifest = new File(PathManager.getInstance().getWorldPath(),
+                                   'ImageManifest.png')
 
-    public BlockManifestor(BlockManager bm) {
+    File _imageManifestMipMap1 = new File(PathManager.getInstance()
+                                                     .getWorldPath(),
+                                          'ImageManifest1.png')
+
+    File _imageManifestMipMap2 = new File(PathManager.getInstance()
+                                                     .getWorldPath(),
+                                          'ImageManifest2.png')
+
+    File _imageManifestMipMap3 = new File(PathManager.getInstance()
+                                                     .getWorldPath(),
+                                          'ImageManifest3.png')
+
+    public BlockManifestor()
+    {
+    }
+
+    public BlockManifestor(BlockManager bm)
+    {
         _bm = bm
     }
 
     /**
-     * On game startup we need to load Block configuration. Exact Block IDs depend on existing or new world
-     * Later on this class could also review an existing world's version level and make any needed upgrades
-     * (the "version" prop is in all the files as an example, but a complete system would take some work)
+     * On game startup we need to load Block configuration. Exact Block IDs
+     * depend on existing or new world
+     * Later on this class could also review an existing world's version level
+     * and make any needed upgrades
+     * (the "version" prop is in all the files as an example, but a complete
+     * system would take some work)
      */
-    public loadConfig() throws Exception {
-        // First of all we need to know whether we're running from inside a jar or not - this will store a local ref if so
-        // The path used here can be tricky as it may catch something unexpected if too vague (like a lib jar with a matching fragment)
+    public loadConfig()
+            throws Exception
+    {
+        /*
+         * First of all we need to know whether we're running from inside a jar
+         * or not - this will store a local ref if so
+         *
+         * The path used here can be tricky as it may catch something unexpected
+         * if too vague (like a lib jar with a matching fragment)
+         */
         _resourceLoader = new ClasspathResourceLoader("org/terasology/data/blocks")
 
         boolean worldExists = _blockManifest.exists() && _imageManifest.exists()
 
         // Check if we've got a manifest - later this would base on / trigger when user selects world load / create (GUI)
-        if (worldExists) {
+        if (worldExists)
+        {
             loadManifest()
             // Load the ImageManifest into TextureManager as the "terrain" reference of old
             // TODO: Could actually both load existing textures and added ones and update the manifest files fairly easily
-        } else {
+        }
+        else
+        {
             // If we don't have a saved world we'll need to build a new ImageManifest from raw block textures
             String path = "images"
             org.terasology.model.blocks.management.BlockManifestor.log.fine "*** Going to scan for images from classpath: " + _resourceLoader.getPackagePath() + '/' + path
