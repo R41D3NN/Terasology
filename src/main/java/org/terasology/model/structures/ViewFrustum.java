@@ -50,8 +50,7 @@ public class ViewFrustum {
     public void updateFrustum() {
         GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, _proj);
         GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, _model);
-        for (int ci = 0; ci < _clip.array().length; ci++)
-        {
+        for (int ci = 0; ci < _clip.array().length; ci++) {
             // Do we use a quick math method for this?
             int mi = (int)Math.floor(ci / 4);
             int mci = ci % 4;
@@ -60,8 +59,7 @@ public class ViewFrustum {
                     _model.get(mi * 4 + 2) * _proj.get(mci + 8) +
                     _model.get(mi * 4 + 3) * _proj.get(mci + 12));
         }
-        for (int plane = 0; plane < _planes.length; plane++)
-        {
+        for (int plane = 0; plane < _planes.length; plane++) {
             int mp = (int)Math.floor(plane / 2);
             _planes[plane].setA(_clip.get(3) - _clip.get(mp));
             _planes[plane].setB(_clip.get(7) - _clip.get(mp + 4));
@@ -75,11 +73,10 @@ public class ViewFrustum {
      * Returns true if the given point intersects the view frustum.
      */
     public boolean intersects(double x, double y, double z) {
-        for (int i = 0; i < 6; i++) {
-            if (_planes[i].getA() * x + _planes[i].getB() * y + _planes[i].getC() * z + _planes[i].getD() <= 0) {
+        for (int i = 0; i < 6; i++)
+            if (_planes[i].getA() * x + _planes[i].getB() * y +
+                    _planes[i].getC() * z + _planes[i].getD() <= 0)
                 return false;
-            }
-        }
         return true;
     }
 
